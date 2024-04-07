@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import validator from "validator";
 import bcrypt, { hash } from "bcrypt";
 import userModel from "../../../models/user.model";
+import jwt from "jsonwebtoken";
+
 const userRegister = async (req: Request, res: Response) => {
   const {
     full_name,
@@ -63,9 +65,20 @@ const userRegister = async (req: Request, res: Response) => {
 
   if (!userDetails) throw "user cannot be created";
 
+  const findUser = await userModel.findOne({
+    $or: [{ email }, { phone_no }],
+  });
+  if (!findUser) throw "user does not exist";
+  const payload = {
+    user_id: findUser._id,
+  };
+
+  const access_token = jwt.sign(payload, "secret-key-1076");
+
   res.status(200).json({
     message: "Registered Successful",
     userInformation: userDetails,
+    access_token,
   });
 };
 export default userRegister;

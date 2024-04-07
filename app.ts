@@ -3,8 +3,9 @@ import "express-async-errors";
 import mongoose from "mongoose";
 import cors from "cors";
 import "./model";
-import userRouter from "./modules/Users/controller/users.routes";
 import errorHandler from "./errorHandler";
+import venderRouter from "./modules/VendorsDetails/vender.routes";
+import productRouter from "./modules/Products/product.routes";
 require("dotenv").config();
 
 const app = express();
@@ -20,7 +21,8 @@ mongoose
     console.log("connection to database failed");
   });
 
-app.use("/users", userRouter);
+app.use("/vendors", venderRouter);
+app.use("/products", productRouter);
 
 app.use(errorHandler);
 
