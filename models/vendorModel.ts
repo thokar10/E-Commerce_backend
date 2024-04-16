@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const vendorSchema = new mongoose.Schema(
   {
+    venderName: {
+      type: String,
+      required: true,
+    },
     venderEmail: {
       type: String,
       required: true,

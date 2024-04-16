@@ -1,16 +1,13 @@
 import { Request, Response } from "express";
 import productModel from "../../../models/product.model";
 const createProducts = async (req: Request, res: Response) => {
-  console.log(req.body);
-  const { ProductName, ProductImage } = req.body;
-  console.log(req.params);
+  const { ProductName, ProductImage, ProductPrice, vendor_id } = req.body;
 
-  const { vendor_id } = req.params;
-
-  const CreateProduct = productModel.create({
-    ProductName: ProductName,
+  const CreateProduct = await productModel.create({
+    ProductName,
     ProductImage,
     venderId: vendor_id,
+    ProductPrice,
   });
 
   if (!CreateProduct) throw "unable to create a product";

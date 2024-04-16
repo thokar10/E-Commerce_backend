@@ -1,32 +1,40 @@
-import userModel from "../../../models/user.model";
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import validator from "validator";
+import userModel from "../../../models/user.model";
 
 const userLogin = async (req: Request, res: Response) => {
-  const { email, phone_no, password } = req.body;
+  const { userEmail, userPassword } = req.body;
 
-  const findUser = await userModel.findOne({
-    $or: [{ email }, { phone_no }],
-  });
+  if (!userEmail) throw "user email is required";
+  const checkEmailFormat = validator.isEmail(userEmail.toString());
+  if (!checkEmailFormat) throw "email format invalid";
+  if (!userPassword) throw "user password is required";
 
-  console.log(findUser);
-  if (!findUser) throw "email or  phone number invalid";
+  const findUser = await userModel
+    .findOne({
+      userEmail,
+    })
+    .select("userPassword");
 
-  console.log(findUser.password);
+  if (!findUser) throw "unable to find user";
 
-  const checkPassword = await bcrypt.compare(password, findUser.password);
-  if (!checkPassword) throw "password invalid";
+  const checkPassword = await bcrypt.compare(
+    userPassword,
+    findUser.userPassword
+  );
+  if (!checkPassword) throw "password is incorrect";
 
   const payload = {
     user_id: findUser._id,
   };
 
-  const access_token = jwt.sign(payload, "secret-key-1076");
+  const userAccessToken = jwt.sign(payload, process.env.secret_key_User!);
 
   res.status(200).json({
-    message: "Login in successful",
-    access_token: access_token,
+    message: "login successfully",
+    userAccessToken,
   });
 };
 export default userLogin;

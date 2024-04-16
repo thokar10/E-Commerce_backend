@@ -1,19 +1,20 @@
-import userModel from "../../../models/user.model";
 import { Request, Response } from "express";
+import userModel from "../../../models/user.model";
 
-const userProfile = async (req: any, res: Response) => {
+const userProfile = async (req: Request, res: Response) => {
   console.log(req.user);
 
-  if (!req.user) throw "user id cannot be achieved";
+  const user_id = req.user.user_id;
 
-  const findUser = await userModel.findOne({
-    _id: req.user.user_id,
+  console.log(user_id);
+
+  const userDetails = await userModel.findOne({
+    _id: user_id,
   });
 
-  if (!findUser) throw "user  invalid";
   res.status(200).json({
-    message: "welcome to user profile",
-    userDetails: findUser,
+    message: "welcome to user Profile ",
+    userDetails,
   });
 };
 export default userProfile;

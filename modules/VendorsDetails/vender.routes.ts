@@ -10,6 +10,6 @@ venderRouter.post("/signUp", venderSignUp);
 venderRouter.post("/login", venderLogin);
 
 venderRouter.use(authorization);
-venderRouter.get("/dashboard", venderDashboard);
+venderRouter.post("/dashboard", venderDashboard);
 
 export default venderRouter;

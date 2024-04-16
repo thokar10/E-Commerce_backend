@@ -6,6 +6,8 @@ import "./model";
 import errorHandler from "./errorHandler";
 import venderRouter from "./modules/VendorsDetails/vender.routes";
 import productRouter from "./modules/Products/product.routes";
+import userRouter from "./modules/users/user.routes";
+import cartRouter from "./modules/Carts/carts.routes";
 require("dotenv").config();
 
 const app = express();
@@ -23,6 +25,8 @@ mongoose
 
 app.use("/vendors", venderRouter);
 app.use("/products", productRouter);
+app.use("/users", userRouter);
+app.use("/carts", cartRouter);
 
 app.use(errorHandler);
 

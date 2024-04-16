@@ -1,84 +1,62 @@
 import { Request, Response } from "express";
-import validator from "validator";
-import bcrypt, { hash } from "bcrypt";
 import userModel from "../../../models/user.model";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import validator from "validator";
 
 const userRegister = async (req: Request, res: Response) => {
   const {
-    full_name,
-    email,
-    phone_no,
+    userName,
+    userEmail,
+    userPassword,
     location,
-    username,
-    password,
-    confirm_password,
+    phoneNo,
+    confirmPassword,
   } = req.body;
-  if (!phone_no) throw "phone number is required";
 
-  //phone number validation
-  const convertNumberToString = phone_no.toString();
-  if (convertNumberToString.length !== 10) {
-    throw "phone number should be of 10 digits";
-  }
-  const validatePhoneNo = validator.isInt(phone_no.toString());
-  if (!validatePhoneNo) throw "phone number should be in number ";
-  const findExistedUser = await userModel.findOne({
-    $or: [
-      {
-        email,
-      },
-      {
-        phone_no,
-      },
-    ],
-  });
-
-  if (findExistedUser) throw "user is already existed ";
-
-  if (!full_name) throw "full name is  required";
-  const validateFullName = validator.isNumeric(full_name.toString());
-  if (validateFullName) throw "full name should be in String ";
-
-  if (!email) throw "email is required";
-  const validateEmail = validator.isEmail(email.toString());
-  if (!validateEmail) throw "invalid email ";
-
+  if (!userName) throw "user name is required";
+  if (!userEmail) throw "user email is required";
+  const checkEmailFormat = validator.isEmail(userEmail.toString());
+  if (!checkEmailFormat) throw "email format is not valid";
+  if (!userPassword) throw "user password is required";
   if (!location) throw "location is required";
-  if (!username) throw "username is required";
-  if (!password) throw "password is required";
-  if (!confirm_password) throw "confirm_password is required";
+  if (!phoneNo) throw "phone no  is required";
+  if (!confirmPassword) throw "confirm password is required";
 
-  if (password != confirm_password) throw "password doesn't matched";
+  if (userPassword != confirmPassword) throw "password does not matched";
 
-  //Encrypting password
-  const hashPassword = await bcrypt.hash(password, 8);
+  const findExistingUser = await userModel.findOne({
+    userEmail,
+  });
+  if (findExistingUser) throw "user is already existed";
 
-  const userDetails = await userModel.create({
-    full_name,
-    email,
-    phone_no,
+  const encrpytedPassword = await bcrypt.hash(userPassword, 8);
+
+  const createUser = await userModel.create({
+    userName,
+    userEmail,
+    userPassword: encrpytedPassword,
     location,
-    username,
-    password: hashPassword,
+    phoneNo,
   });
 
-  if (!userDetails) throw "user cannot be created";
+  if (!createUser) throw "unable to register a user";
 
   const findUser = await userModel.findOne({
-    $or: [{ email }, { phone_no }],
+    userEmail,
   });
-  if (!findUser) throw "user does not exist";
+
+  if (!findUser) throw "unable to find user";
+
   const payload = {
     user_id: findUser._id,
   };
 
-  const access_token = jwt.sign(payload, "secret-key-1076");
+  const userAccessToken = jwt.sign(payload, process.env.secret_key_User!);
 
   res.status(200).json({
-    message: "Registered Successful",
-    userInformation: userDetails,
-    access_token,
+    message: "Registered successfully",
+    userAccessToken,
   });
 };
 export default userRegister;

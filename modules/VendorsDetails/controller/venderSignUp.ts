@@ -6,8 +6,13 @@ import jwt from "jsonwebtoken";
 
 const venderSignUp = async (req: Request, res: Response) => {
   console.log(req.body);
-  const { venderEmail, venderPassword, businessName, confirm_password } =
-    req.body;
+  const {
+    venderEmail,
+    venderPassword,
+    businessName,
+    confirm_password,
+    venderName,
+  } = req.body;
 
   if (!venderEmail) throw " email is required";
   if (!venderPassword) throw "password is required";
@@ -31,6 +36,7 @@ const venderSignUp = async (req: Request, res: Response) => {
     throw " vendors   having this   email is  already existed";
 
   const newVendor = await venderModel.create({
+    venderName,
     venderEmail,
     venderPassword: encryptPassword,
     businessName,
