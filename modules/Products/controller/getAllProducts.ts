@@ -10,6 +10,7 @@ const getAllProducts = async (req: any, res: Response) => {
   const findProduct = await productModel.find({
     venderId: vender_id,
   });
+
   if (findProduct.length === 0) throw "unable to find the product";
 
   console.log(findProduct);

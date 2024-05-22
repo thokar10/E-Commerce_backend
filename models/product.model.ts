@@ -18,6 +18,13 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    ProductCategory: {
+      type: String,
+      required: true,
+    },
+    ProductDescription: {
+      type: String,
+    },
   },
   {
     timestamps: true,

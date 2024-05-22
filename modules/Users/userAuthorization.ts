@@ -4,8 +4,6 @@ import jwt from "jsonwebtoken";
 
 const userAuthorization = (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log(req.headers.authorization);
-
     if (!req.headers.authorization) throw "headers empty";
 
     const userAccessToken = req.headers.authorization.split(" ")[1];

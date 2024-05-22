@@ -23,12 +23,21 @@ const createCarts = async (req: Request, res: Response) => {
     productId: productObjectId,
   });
 
+  const totalAmountOfProduct = ProductPrice * Quantity;
+
   if (!findExistedProductInCart) {
+    const findVenderIdOfProduct = await productModel.findOne({
+      _id: product_id,
+    });
+
+    const vender_id = findVenderIdOfProduct?.venderId;
+    if (!vender_id) throw "vender id not found";
     const createCart = await cartModel.create({
       productId: product_id,
       Quantity,
       userId: user_id,
-      totalPrice: ProductPrice,
+      totalPrice: totalAmountOfProduct,
+      venderId: vender_id,
     });
 
     if (!createCart) throw "cannot able to add into the cart";
